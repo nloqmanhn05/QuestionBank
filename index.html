@@ -22,6 +22,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCq9TElPYzJBVDasyLoFd_N47ORdwk37CQ",
@@ -33,9 +34,10 @@
             measurementId: "G-6QNBR07VH5"
         };
 
-        // Initialize Firebase & Analytics
+        // Initialize Firebase, Analytics & Firestore
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
+        const db = getFirestore(app);
 
         // Expose safe logging helper for script.js
         window.logAnalyticsEvent = function(eventName, eventParams = {}) {
@@ -44,6 +46,32 @@
             } catch (err) {
                 console.warn("Analytics log error:", err);
             }
+        };
+
+        // Expose Firestore user progress helpers for script.js
+        window.saveUserProgressToFirestore = async function(userId, userState) {
+            try {
+                const userDocRef = doc(db, "user_progress", userId);
+                await setDoc(userDocRef, {
+                    progress: userState,
+                    updatedAt: serverTimestamp()
+                }, { merge: true });
+            } catch (err) {
+                console.warn("Firestore save error:", err);
+            }
+        };
+
+        window.loadUserProgressFromFirestore = async function(userId) {
+            try {
+                const userDocRef = doc(db, "user_progress", userId);
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    return docSnap.data().progress;
+                }
+            } catch (err) {
+                console.warn("Firestore load error:", err);
+            }
+            return null;
         };
     </script>
 </head>

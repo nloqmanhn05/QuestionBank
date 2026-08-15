@@ -2440,11 +2440,70 @@ function trackEvent(eventName, eventParams = {}) {
     }
 }
 
+// Persistent User ID for Cloud Progress Sync
+function getOrCreateUserId() {
+    let uid = null;
+    try {
+        uid = localStorage.getItem('qb_user_id');
+        if (!uid) {
+            uid = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+            localStorage.setItem('qb_user_id', uid);
+        }
+    } catch (e) {
+        uid = 'user_' + Date.now().toString(36);
+    }
+    return uid;
+}
+
+const currentUserId = getOrCreateUserId();
+
+function saveProgress() {
+    // 1. Instant local storage cache
+    try {
+        localStorage.setItem('qb_user_state', JSON.stringify(userState));
+    } catch (e) {}
+
+    // 2. Cloud Firestore sync
+    if (typeof window.saveUserProgressToFirestore === 'function') {
+        window.saveUserProgressToFirestore(currentUserId, userState);
+    }
+}
+
+function loadCachedProgress() {
+    try {
+        const saved = localStorage.getItem('qb_user_state');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed && typeof parsed === 'object') {
+                userState = { ...userState, ...parsed };
+            }
+        }
+    } catch (e) {}
+}
+
+async function syncProgressFromFirestore() {
+    if (typeof window.loadUserProgressFromFirestore === 'function') {
+        const remoteProgress = await window.loadUserProgressFromFirestore(currentUserId);
+        if (remoteProgress && typeof remoteProgress === 'object') {
+            userState = { ...userState, ...remoteProgress };
+            try {
+                localStorage.setItem('qb_user_state', JSON.stringify(userState));
+            } catch (e) {}
+            // Update UI with cloud synced progress
+            renderChapterSidebar();
+            loadQuestion(currentChapterKey, currentQuestionIndex);
+            updateGlobalStats();
+        }
+    }
+}
+
 function initApp() {
+    loadCachedProgress();
     renderChapterSidebar();
     loadQuestion(currentChapterKey, currentQuestionIndex);
     updateGlobalStats();
     trackEvent('app_initialized');
+    syncProgressFromFirestore();
 }
 
 function renderChapterSidebar() {
@@ -2639,6 +2698,7 @@ function handleOptionClick(chapKey, qIdx, chosenOptIndex) {
     loadQuestion(chapKey, qIdx);
     renderChapterSidebar();
     updateGlobalStats();
+    saveProgress();
 
     // Auto-scroll to explanation on mobile screens so it is immediately visible
     if (window.innerWidth < 1024 && feedbackPanelEl) {
@@ -2735,6 +2795,7 @@ btnResetChapter.onclick = () => {
     if (confirm(`Are you sure you want to reset all progress for Chapter ${currentChapterKey.replace('ch', '')}?`)) {
         userState[currentChapterKey] = {};
         trackEvent('reset_chapter', { chapter_key: currentChapterKey });
+        saveProgress();
         loadQuestion(currentChapterKey, currentQuestionIndex);
         renderChapterSidebar();
         updateGlobalStats();
