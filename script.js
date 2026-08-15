@@ -2440,22 +2440,27 @@ function trackEvent(eventName, eventParams = {}) {
     }
 }
 
-// Persistent User ID for Cloud Progress Sync
-function getOrCreateUserId() {
+// Authenticated user state
+let currentAuthUser = null;
+
+// Persistent Guest ID for fallback Cloud Progress Sync
+function getOrCreateGuestId() {
     let uid = null;
     try {
         uid = localStorage.getItem('qb_user_id');
         if (!uid) {
-            uid = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
+            uid = 'guest_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now().toString(36);
             localStorage.setItem('qb_user_id', uid);
         }
     } catch (e) {
-        uid = 'user_' + Date.now().toString(36);
+        uid = 'guest_' + Date.now().toString(36);
     }
     return uid;
 }
 
-const currentUserId = getOrCreateUserId();
+function getActiveUserId() {
+    return currentAuthUser ? currentAuthUser.uid : getOrCreateGuestId();
+}
 
 function saveProgress() {
     // 1. Instant local storage cache
@@ -2463,9 +2468,10 @@ function saveProgress() {
         localStorage.setItem('qb_user_state', JSON.stringify(userState));
     } catch (e) {}
 
-    // 2. Cloud Firestore sync
+    // 2. Cloud Firestore sync (bound to auth account if logged in)
+    const activeUid = getActiveUserId();
     if (typeof window.saveUserProgressToFirestore === 'function') {
-        window.saveUserProgressToFirestore(currentUserId, userState);
+        window.saveUserProgressToFirestore(activeUid, userState);
     }
 }
 
@@ -2482,8 +2488,9 @@ function loadCachedProgress() {
 }
 
 async function syncProgressFromFirestore() {
+    const activeUid = getActiveUserId();
     if (typeof window.loadUserProgressFromFirestore === 'function') {
-        const remoteProgress = await window.loadUserProgressFromFirestore(currentUserId);
+        const remoteProgress = await window.loadUserProgressFromFirestore(activeUid);
         if (remoteProgress && typeof remoteProgress === 'object') {
             userState = { ...userState, ...remoteProgress };
             try {
@@ -2504,6 +2511,7 @@ function initApp() {
     updateGlobalStats();
     trackEvent('app_initialized');
     syncProgressFromFirestore();
+    initAuthListeners();
 }
 
 function renderChapterSidebar() {
@@ -2894,6 +2902,7 @@ const TOUR_STEPS = [
 
 let currentTourStepIndex = 0;
 let isTourActive = false;
+let isForcedTour = false;
 
 const tourBackdropEl = document.getElementById('tour-backdrop');
 const tourSpotlightEl = document.getElementById('tour-spotlight');
@@ -2910,10 +2919,20 @@ const tourBtnSkipEl = document.getElementById('tour-btn-skip');
 const tourDotsIndicatorEl = document.getElementById('tour-dots-indicator');
 const btnStartTourEl = document.getElementById('btn-start-tour');
 
-function startTour() {
+function startTour(forceMandatory = false) {
     isTourActive = true;
+    isForcedTour = forceMandatory;
     currentTourStepIndex = 0;
-    trackEvent('start_tour');
+    trackEvent('start_tour', { mandatory: forceMandatory });
+
+    if (tourBtnSkipEl) {
+        if (forceMandatory) {
+            tourBtnSkipEl.classList.add('hidden');
+        } else {
+            tourBtnSkipEl.classList.remove('hidden');
+        }
+    }
+
     if (tourBackdropEl) tourBackdropEl.classList.add('active');
     if (tourSpotlightEl) tourSpotlightEl.classList.add('active');
     if (tourPopoverEl) tourPopoverEl.classList.add('active');
@@ -2921,9 +2940,15 @@ function startTour() {
     showTourStep(currentTourStepIndex);
 }
 
-function endTour() {
+function endTour(isCompleted = false) {
+    // If it's a mandatory tour for new users, do not allow ending before completion
+    if (isForcedTour && !isCompleted && currentTourStepIndex < TOUR_STEPS.length - 1) {
+        return;
+    }
+
     isTourActive = false;
-    trackEvent('end_tour', { last_step: currentTourStepIndex + 1 });
+    isForcedTour = false;
+    trackEvent('end_tour', { last_step: currentTourStepIndex + 1, completed: isCompleted });
     if (tourBackdropEl) tourBackdropEl.classList.remove('active');
     if (tourSpotlightEl) tourSpotlightEl.classList.remove('active');
     if (tourPopoverEl) tourPopoverEl.classList.remove('active');
@@ -2935,7 +2960,14 @@ function endTour() {
 
     try {
         localStorage.setItem('question_bank_tour_seen', 'true');
+        if (currentAuthUser) {
+            localStorage.setItem('qb_tour_done_' + currentAuthUser.uid, 'true');
+        }
     } catch (e) { }
+
+    if (currentAuthUser && typeof window.saveUserProgressToFirestore === 'function') {
+        window.saveUserProgressToFirestore(currentAuthUser.uid, userState, { tourCompleted: true });
+    }
 }
 
 function renderTourDots() {
@@ -3070,14 +3102,14 @@ function positionSpotlightAndPopover(targetEl) {
 
 // Tour Button Listeners
 if (btnStartTourEl) {
-    btnStartTourEl.onclick = () => startTour();
+    btnStartTourEl.onclick = () => startTour(false);
 }
 if (tourBtnNextEl) {
     tourBtnNextEl.onclick = () => {
         if (currentTourStepIndex < TOUR_STEPS.length - 1) {
             showTourStep(currentTourStepIndex + 1);
         } else {
-            endTour();
+            endTour(true);
         }
     };
 }
@@ -3089,10 +3121,14 @@ if (tourBtnPrevEl) {
     };
 }
 if (tourBtnSkipEl) {
-    tourBtnSkipEl.onclick = () => endTour();
+    tourBtnSkipEl.onclick = () => {
+        if (!isForcedTour) endTour(false);
+    };
 }
 if (tourBackdropEl) {
-    tourBackdropEl.onclick = () => endTour();
+    tourBackdropEl.onclick = () => {
+        if (!isForcedTour) endTour(false);
+    };
 }
 
 // Keyboard navigation for Tour
@@ -3100,11 +3136,11 @@ window.addEventListener('keydown', (e) => {
     if (!isTourActive) return;
     if (e.key === 'ArrowRight') {
         if (currentTourStepIndex < TOUR_STEPS.length - 1) showTourStep(currentTourStepIndex + 1);
-        else endTour();
+        else endTour(true);
     } else if (e.key === 'ArrowLeft') {
         if (currentTourStepIndex > 0) showTourStep(currentTourStepIndex - 1);
     } else if (e.key === 'Escape') {
-        endTour();
+        if (!isForcedTour) endTour(false);
     }
 });
 
@@ -3116,13 +3152,230 @@ window.addEventListener('resize', () => {
     }
 });
 
+// ====================================================
+// AUTHENTICATION CONTROLLER & MODAL
+// ====================================================
+let authMode = 'signin'; // 'signin' | 'signup'
+
+const authModalBackdropEl = document.getElementById('auth-modal-backdrop');
+const btnOpenAuthEl = document.getElementById('btn-open-auth');
+const authBtnCloseEl = document.getElementById('auth-btn-close');
+const tabBtnSigninEl = document.getElementById('tab-btn-signin');
+const tabBtnSignupEl = document.getElementById('tab-btn-signup');
+const authFormEl = document.getElementById('auth-form');
+const authNameGroupEl = document.getElementById('auth-name-group');
+const authNameInputEl = document.getElementById('auth-name-input');
+const authEmailInputEl = document.getElementById('auth-email-input');
+const authPasswordInputEl = document.getElementById('auth-password-input');
+const authBtnSubmitEl = document.getElementById('auth-btn-submit');
+const authBtnSubmitTextEl = document.getElementById('auth-btn-submit-text');
+const authErrorBannerEl = document.getElementById('auth-error-banner');
+const authErrorTextEl = document.getElementById('auth-error-text');
+
+const authLoggedOutEl = document.getElementById('auth-logged-out');
+const authLoggedInEl = document.getElementById('auth-logged-in');
+const userAvatarBadgeEl = document.getElementById('user-avatar-badge');
+const userDisplayNameEl = document.getElementById('user-display-name');
+const btnSignOutEl = document.getElementById('btn-sign-out');
+
+function openAuthModal(mode = 'signin') {
+    authMode = mode;
+    updateAuthTabUI();
+    clearAuthError();
+    if (authModalBackdropEl) authModalBackdropEl.classList.add('active');
+}
+
+function closeAuthModal() {
+    if (authModalBackdropEl) authModalBackdropEl.classList.remove('active');
+    clearAuthError();
+}
+
+function updateAuthTabUI() {
+    if (authMode === 'signin') {
+        if (tabBtnSigninEl) {
+            tabBtnSigninEl.style.background = 'var(--paper-raised)';
+            tabBtnSigninEl.style.color = 'var(--index)';
+            tabBtnSigninEl.style.boxShadow = '0 2px 6px rgba(0,0,0,0.06)';
+            tabBtnSigninEl.classList.add('font-bold');
+        }
+        if (tabBtnSignupEl) {
+            tabBtnSignupEl.style.background = 'transparent';
+            tabBtnSignupEl.style.color = 'var(--ink-soft)';
+            tabBtnSignupEl.style.boxShadow = 'none';
+            tabBtnSignupEl.classList.remove('font-bold');
+        }
+        if (authNameGroupEl) authNameGroupEl.classList.add('hidden');
+        if (authBtnSubmitTextEl) authBtnSubmitTextEl.textContent = 'Sign In';
+    } else {
+        if (tabBtnSignupEl) {
+            tabBtnSignupEl.style.background = 'var(--paper-raised)';
+            tabBtnSignupEl.style.color = 'var(--index)';
+            tabBtnSignupEl.style.boxShadow = '0 2px 6px rgba(0,0,0,0.06)';
+            tabBtnSignupEl.classList.add('font-bold');
+        }
+        if (tabBtnSigninEl) {
+            tabBtnSigninEl.style.background = 'transparent';
+            tabBtnSigninEl.style.color = 'var(--ink-soft)';
+            tabBtnSigninEl.style.boxShadow = 'none';
+            tabBtnSigninEl.classList.remove('font-bold');
+        }
+        if (authNameGroupEl) authNameGroupEl.classList.remove('hidden');
+        if (authBtnSubmitTextEl) authBtnSubmitTextEl.textContent = 'Create Account';
+    }
+}
+
+function showAuthError(message) {
+    if (authErrorBannerEl && authErrorTextEl) {
+        authErrorTextEl.textContent = message;
+        authErrorBannerEl.classList.remove('hidden');
+    }
+}
+
+function clearAuthError() {
+    if (authErrorBannerEl && authErrorTextEl) {
+        authErrorTextEl.textContent = '';
+        authErrorBannerEl.classList.add('hidden');
+    }
+}
+
+function parseFirebaseError(err) {
+    const code = err ? err.code : '';
+    switch (code) {
+        case 'auth/invalid-email':
+            return 'Invalid email address format.';
+        case 'auth/user-not-found':
+        case 'auth/wrong-password':
+        case 'auth/invalid-credential':
+            return 'Incorrect email or password. Please try again.';
+        case 'auth/email-already-in-use':
+            return 'An account with this email already exists.';
+        case 'auth/weak-password':
+            return 'Password is too weak. Please use at least 6 characters.';
+        default:
+            return err.message || 'Authentication failed. Please try again.';
+    }
+}
+
+async function updateAuthUI(user, isNewUserRegistration = false) {
+    currentAuthUser = user;
+    if (user) {
+        if (authLoggedOutEl) authLoggedOutEl.classList.add('hidden');
+        if (authLoggedInEl) authLoggedInEl.classList.remove('hidden');
+
+        const name = user.displayName || user.email.split('@')[0] || 'Student';
+        if (userDisplayNameEl) userDisplayNameEl.textContent = name;
+        if (userAvatarBadgeEl) userAvatarBadgeEl.textContent = name.charAt(0).toUpperCase();
+
+        closeAuthModal();
+
+        // Load progress & check tour status from cloud
+        let isTourDone = localStorage.getItem('qb_tour_done_' + user.uid) === 'true';
+        const remoteData = await window.loadUserProgressFromFirestore(user.uid);
+        if (remoteData) {
+            if (remoteData.progress) {
+                userState = { ...userState, ...remoteData.progress };
+            }
+            if (remoteData.tourCompleted) {
+                isTourDone = true;
+            }
+        }
+
+        renderChapterSidebar();
+        loadQuestion(currentChapterKey, currentQuestionIndex);
+        updateGlobalStats();
+
+        // If newly registered or tour not completed, start mandatory tour (skip disabled)
+        if (isNewUserRegistration || !isTourDone) {
+            setTimeout(() => {
+                startTour(true); // mandatory mode
+            }, 600);
+        }
+    } else {
+        if (authLoggedOutEl) authLoggedOutEl.classList.remove('hidden');
+        if (authLoggedInEl) authLoggedInEl.classList.add('hidden');
+    }
+}
+
+function initAuthListeners() {
+    if (window.authApi && typeof window.authApi.onAuthStateChanged === 'function') {
+        window.authApi.onAuthStateChanged((user) => {
+            updateAuthUI(user);
+        });
+    }
+
+    if (btnOpenAuthEl) btnOpenAuthEl.onclick = () => openAuthModal('signin');
+    if (authBtnCloseEl) authBtnCloseEl.onclick = () => closeAuthModal();
+
+    if (authModalBackdropEl) {
+        authModalBackdropEl.onclick = (e) => {
+            if (e.target === authModalBackdropEl) closeAuthModal();
+        };
+    }
+
+    if (tabBtnSigninEl) tabBtnSigninEl.onclick = () => { authMode = 'signin'; updateAuthTabUI(); };
+    if (tabBtnSignupEl) tabBtnSignupEl.onclick = () => { authMode = 'signup'; updateAuthTabUI(); };
+
+    if (authFormEl) {
+        authFormEl.onsubmit = async (e) => {
+            e.preventDefault();
+            clearAuthError();
+
+            const email = authEmailInputEl ? authEmailInputEl.value.trim() : '';
+            const password = authPasswordInputEl ? authPasswordInputEl.value : '';
+            const name = authNameInputEl ? authNameInputEl.value.trim() : '';
+
+            if (!email || !password) {
+                showAuthError('Please fill in both email and password.');
+                return;
+            }
+
+            if (authBtnSubmitEl) {
+                authBtnSubmitEl.disabled = true;
+                authBtnSubmitEl.style.opacity = '0.7';
+            }
+
+            try {
+                if (authMode === 'signin') {
+                    const cred = await window.authApi.signInEmail(email, password);
+                    trackEvent('auth_sign_in', { method: 'email' });
+                    updateAuthUI(cred.user, false);
+                } else {
+                    const cred = await window.authApi.signUpEmail(email, password, name);
+                    trackEvent('auth_sign_up', { method: 'email' });
+                    updateAuthUI(cred.user, true); // new user!
+                }
+            } catch (err) {
+                showAuthError(parseFirebaseError(err));
+            } finally {
+                if (authBtnSubmitEl) {
+                    authBtnSubmitEl.disabled = false;
+                    authBtnSubmitEl.style.opacity = '1';
+                }
+            }
+        };
+    }
+
+    if (btnSignOutEl) {
+        btnSignOutEl.onclick = async () => {
+            if (confirm('Are you sure you want to sign out?')) {
+                try {
+                    await window.authApi.signOut();
+                    trackEvent('auth_sign_out');
+                } catch (e) {
+                    console.warn('Sign out error:', e);
+                }
+            }
+        };
+    }
+}
+
 // Initialize on load
 window.onload = function () {
     initApp();
     setTimeout(() => {
         try {
             if (!localStorage.getItem('question_bank_tour_seen')) {
-                startTour();
+                startTour(false);
             }
         } catch (e) { }
     }, 700);

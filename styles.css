@@ -340,6 +340,52 @@ body {
     #sidebar.collapsed #btn-reset-chapter span {
         display: none !important;
     }
+
+    #sidebar.collapsed .auth-user-block {
+        padding: 0.75rem 0.5rem !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #sidebar.collapsed .auth-btn-label,
+    #sidebar.collapsed .auth-sync-hint {
+        display: none !important;
+    }
+
+    #sidebar.collapsed #btn-open-auth {
+        width: 2.75rem !important;
+        height: 2.75rem !important;
+        padding: 0 !important;
+        justify-content: center;
+    }
+
+    #sidebar.collapsed #auth-logged-in {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    #sidebar.collapsed #auth-logged-in .sidebar-label {
+        display: none !important;
+    }
+}
+
+/* ==========================================
+   Auth Modal Styles
+   ========================================== */
+#auth-modal-backdrop.active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+#auth-modal-backdrop.active #auth-modal {
+    opacity: 1 !important;
+    transform: scale(1) !important;
+}
+
+#auth-form input:focus {
+    border-color: var(--index) !important;
+    box-shadow: 0 0 0 3px var(--index-soft) !important;
 }
 
 /* ==========================================
