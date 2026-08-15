@@ -354,13 +354,32 @@ body {
     animation: spin-slow 12s linear infinite;
 }
 
+#tour-backdrop {
+    transition: opacity 0.35s ease;
+}
+
 #tour-backdrop.active {
     opacity: 1 !important;
     pointer-events: auto !important;
 }
 
+#tour-spotlight {
+    transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.35s ease;
+}
+
 #tour-spotlight.active {
     opacity: 1 !important;
+}
+
+#tour-popover {
+    transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s ease,
+                transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 #tour-popover.active {
@@ -374,7 +393,7 @@ body {
     height: 6px;
     border-radius: 9999px;
     background-color: var(--card-line);
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tour-dot.active {
@@ -392,4 +411,164 @@ body {
     border-radius: 16px !important;
     transition: all 0.3s ease !important;
 }
+
+/* ==========================================
+   Smooth Animations & Transitions
+   ========================================== */
+
+/* --- Question card fade-in when navigating --- */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.question-card {
+    animation: fadeSlideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* --- Option cards: staggered entrance --- */
+@keyframes optionSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.option-card {
+    animation: optionSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.option-card:nth-child(1) { animation-delay: 0.03s; }
+.option-card:nth-child(2) { animation-delay: 0.08s; }
+.option-card:nth-child(3) { animation-delay: 0.13s; }
+.option-card:nth-child(4) { animation-delay: 0.18s; }
+
+/* --- Feedback panel smooth reveal --- */
+@keyframes feedbackReveal {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        max-height: 600px;
+    }
+}
+
+#feedback-panel:not(.hidden) {
+    animation: feedbackReveal 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* --- Chapter sidebar buttons --- */
+.chapter-btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chapter-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.chapter-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.chapter-btn.active-chap-btn {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Nav buttons (prev/next) --- */
+#btn-prev-q,
+#btn-next-q {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#btn-prev-q:hover:not(:disabled),
+#btn-next-q:hover:not(:disabled) {
+    background: var(--index-soft) !important;
+    border-color: var(--index) !important;
+    color: var(--index) !important;
+    transform: scale(1.08);
+}
+
+#btn-prev-q:active:not(:disabled),
+#btn-next-q:active:not(:disabled) {
+    transform: scale(0.94);
+}
+
+/* --- Reset chapter button --- */
+#btn-reset-chapter {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#btn-reset-chapter:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(201, 69, 69, 0.15);
+    filter: brightness(0.96);
+}
+
+#btn-reset-chapter:active {
+    transform: translateY(0) scale(0.97);
+}
+
+/* --- Quick-jump grid dot buttons --- */
+#question-grid-nav button {
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#question-grid-nav button:hover {
+    transform: scale(1.12);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#question-grid-nav button:active {
+    transform: scale(0.92);
+}
+
+/* --- Progress bar smooth fill --- */
+#chap-progress-bar {
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Bento cards subtle hover lift --- */
+.bento {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* --- Stats row number transitions --- */
+#global-score-text,
+#global-accuracy-text,
+#chap-progress-text,
+#quick-jump-progress {
+    transition: color 0.3s ease;
+}
+
+/* --- Question text fade transition --- */
+#question-text {
+    transition: opacity 0.2s ease;
+}
+
+/* --- Sidebar toggle smooth rotation --- */
+#sidebar-toggle i {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.2s ease;
+}
+
+/* --- Footer subtle appearance --- */
+footer {
+    transition: opacity 0.3s ease;
+}
+
 
