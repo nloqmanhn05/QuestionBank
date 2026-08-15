@@ -42,7 +42,7 @@
         const auth = getAuth(app);
 
         // Expose safe logging helper for script.js
-        window.logAnalyticsEvent = function(eventName, eventParams = {}) {
+        window.logAnalyticsEvent = function (eventName, eventParams = {}) {
             try {
                 logEvent(analytics, eventName, eventParams);
             } catch (err) {
@@ -51,7 +51,7 @@
         };
 
         // Expose Firestore user progress helpers for script.js
-        window.saveUserProgressToFirestore = async function(userId, userState, extraData = {}) {
+        window.saveUserProgressToFirestore = async function (userId, userState, extraData = {}) {
             try {
                 const userDocRef = doc(db, "user_progress", userId);
                 await setDoc(userDocRef, {
@@ -64,7 +64,7 @@
             }
         };
 
-        window.loadUserProgressFromFirestore = async function(userId) {
+        window.loadUserProgressFromFirestore = async function (userId) {
             try {
                 const userDocRef = doc(db, "user_progress", userId);
                 const docSnap = await getDoc(userDocRef);
@@ -205,18 +205,21 @@
                             U
                         </div>
                         <div class="min-w-0 sidebar-label">
-                            <p id="user-display-name" class="text-xs font-bold truncate leading-tight font-display" style="color: var(--ink);">
+                            <p id="user-display-name" class="text-xs font-bold truncate leading-tight font-display"
+                                style="color: var(--ink);">
                                 User
                             </p>
-                            <span class="flex items-center gap-1 text-[10px] font-mono leading-tight mt-0.5" style="color: var(--correct);">
-                                <span class="w-1.5 h-1.5 rounded-full bg-[var(--correct)] inline-block animate-pulse"></span> Cloud Synced
+                            <span class="flex items-center gap-1 text-[10px] font-mono leading-tight mt-0.5"
+                                style="color: var(--correct);">
+                                <span
+                                    class="w-1.5 h-1.5 rounded-full bg-[var(--correct)] inline-block animate-pulse"></span>
+                                Cloud Synced
                             </span>
                         </div>
                     </div>
                     <button id="btn-sign-out"
                         class="p-2 rounded-xl text-xs transition cursor-pointer hover:bg-black/5 hover:text-[var(--wrong)]"
-                        style="color: var(--ink-soft);"
-                        title="Sign Out">
+                        style="color: var(--ink-soft);" title="Sign Out">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     </button>
                 </div>
@@ -370,16 +373,26 @@
     </div>
 
     <!-- Onboarding Tour Backdrop & Spotlight -->
-    <div id="tour-backdrop" class="fixed inset-0 z-[9997] bg-black/60 backdrop-blur-[4px] transition-opacity duration-300 opacity-0 pointer-events-none"></div>
-    <div id="tour-spotlight" class="fixed z-[9998] rounded-2xl pointer-events-none transition-all duration-300 opacity-0 ring-4 ring-[var(--index)] shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]"></div>
+    <div id="tour-backdrop"
+        class="fixed inset-0 z-[9997] bg-black/60 backdrop-blur-[4px] transition-opacity duration-300 opacity-0 pointer-events-none">
+    </div>
+    <div id="tour-spotlight"
+        class="fixed z-[9998] rounded-2xl pointer-events-none transition-all duration-300 opacity-0 ring-4 ring-[var(--index)] shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]">
+    </div>
 
     <!-- Onboarding Tour Popover Card -->
-    <div id="tour-popover" class="fixed z-[10000] w-[90vw] max-w-[390px] p-4 sm:p-5 rounded-2xl bento shadow-2xl transition-all duration-300 opacity-0 pointer-events-none transform scale-95" style="background: var(--paper-raised); border: 2px solid var(--index);">
+    <div id="tour-popover"
+        class="fixed z-[10000] w-[90vw] max-w-[390px] p-4 sm:p-5 rounded-2xl bento shadow-2xl transition-all duration-300 opacity-0 pointer-events-none transform scale-95"
+        style="background: var(--paper-raised); border: 2px solid var(--index);">
         <div class="flex items-center justify-between mb-2">
-            <span id="tour-step-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider" style="background: var(--index-soft); color: var(--index);">Step 1 of 8</span>
-            <button id="tour-btn-skip" class="text-xs font-semibold px-2 py-1 rounded-lg hover:bg-black/5 transition cursor-pointer" style="color: var(--ink-soft);">Skip Tour</button>
+            <span id="tour-step-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider"
+                style="background: var(--index-soft); color: var(--index);">Step 1 of 8</span>
+            <button id="tour-btn-skip"
+                class="text-xs font-semibold px-2 py-1 rounded-lg hover:bg-black/5 transition cursor-pointer"
+                style="color: var(--ink-soft);">Skip Tour</button>
         </div>
-        <h3 id="tour-title" class="font-display text-base sm:text-lg font-bold flex items-center gap-2 mb-1.5" style="color: var(--ink);">
+        <h3 id="tour-title" class="font-display text-base sm:text-lg font-bold flex items-center gap-2 mb-1.5"
+            style="color: var(--ink);">
             <i id="tour-icon" class="fa-solid fa-compass text-base" style="color: var(--index);"></i>
             <span id="tour-title-text">Welcome to Question Bank</span>
         </h3>
@@ -387,29 +400,39 @@
             Description text...
         </p>
         <div class="flex items-center justify-between pt-3 border-t" style="border-color: var(--card-line);">
-            <button id="tour-btn-prev" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed" style="background: var(--paper); border: 1px solid var(--card-line); color: var(--ink);">
+            <button id="tour-btn-prev"
+                class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                style="background: var(--paper); border: 1px solid var(--card-line); color: var(--ink);">
                 <i class="fa-solid fa-chevron-left text-[10px]"></i> Back
             </button>
             <div class="flex items-center gap-1" id="tour-dots-indicator">
                 <!-- Step dots injected dynamically -->
             </div>
-            <button id="tour-btn-next" class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md hover:scale-105 active:scale-95" style="background: var(--index); color: #fff;">
-                <span id="tour-btn-next-text">Next</span> <i id="tour-btn-next-icon" class="fa-solid fa-chevron-right text-[10px]"></i>
+            <button id="tour-btn-next"
+                class="px-4 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 cursor-pointer shadow-md hover:scale-105 active:scale-95"
+                style="background: var(--index); color: #fff;">
+                <span id="tour-btn-next-text">Next</span> <i id="tour-btn-next-icon"
+                    class="fa-solid fa-chevron-right text-[10px]"></i>
             </button>
         </div>
     </div>
 
     <!-- Auth Modal Backdrop & Card -->
-    <div id="auth-modal-backdrop" class="fixed inset-0 z-[10001] bg-black/60 backdrop-blur-[6px] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center justify-center p-3 sm:p-4">
-        <div id="auth-modal" class="w-full max-w-[430px] p-5 sm:p-7 rounded-3xl bento shadow-2xl transition-all duration-300 transform scale-95 opacity-0" style="background: var(--paper-raised); border: 2px solid var(--index);">
+    <div id="auth-modal-backdrop"
+        class="fixed inset-0 z-[10001] bg-black/60 backdrop-blur-[6px] transition-opacity duration-300 opacity-0 pointer-events-none flex items-center justify-center p-3 sm:p-4">
+        <div id="auth-modal"
+            class="w-full max-w-[430px] p-5 sm:p-7 rounded-3xl bento shadow-2xl transition-all duration-300 transform scale-95 opacity-0"
+            style="background: var(--paper-raised); border: 2px solid var(--index);">
             <!-- Modal Header -->
             <div class="flex items-center justify-between mb-4 pb-3 border-b" style="border-color: var(--card-line);">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-2xl flex items-center justify-center text-sm shadow-xs" style="background: var(--index-soft); color: var(--index);">
+                    <div class="w-9 h-9 rounded-2xl flex items-center justify-center text-sm shadow-xs"
+                        style="background: var(--index-soft); color: var(--index);">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <div>
-                        <h2 class="font-serif-instrument text-2xl sm:text-3xl font-bold tracking-wide leading-tight" style="color: var(--ink);">
+                        <h2 class="font-serif-instrument text-2xl sm:text-3xl font-bold tracking-wide leading-tight"
+                            style="color: var(--ink);">
                             Account Access
                         </h2>
                         <p class="text-[11px] font-medium" style="color: var(--ink-soft);">
@@ -417,30 +440,34 @@
                         </p>
                     </div>
                 </div>
-                <button id="auth-btn-close" class="w-8 h-8 rounded-xl flex items-center justify-center transition cursor-pointer hover:bg-black/5" style="color: var(--ink-soft);">
+                <button id="auth-btn-close"
+                    class="w-8 h-8 rounded-xl flex items-center justify-center transition cursor-pointer hover:bg-black/5"
+                    style="color: var(--ink-soft);">
                     <i class="fa-solid fa-xmark text-sm"></i>
                 </button>
             </div>
 
-            <div class="mb-4 p-3.5 sm:p-4 rounded-2xl flex items-start gap-3 shadow-xs" style="background: var(--index-soft); border: 1.5px solid var(--index);">
-                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-sm mt-0.5" style="background: var(--index); color: #fff;">
-                    <i class="fa-solid fa-hourglass-half"></i>
-                </div>
-                <div>
-                    <h3 class="font-serif-instrument text-lg sm:text-xl font-bold leading-tight" style="color: var(--index);">
-                        Incoming
-                    </h3>
-                    <p class="text-xs sm:text-[13px] leading-relaxed mt-1" style="color: var(--ink);">
-                        For now your data would not be saved due to the app still being developed, but you will still be able to prepare for your exam with our app, it's just your progress will not be saved. Good luck with your exam!
-                    </p>
-                    <p class="text-xs sm:text-[13px] leading-relaxed mt-1" style="color: var(--ink);">
-                        By xebvyawkxrkusw(key10)
-                    </p>
-                </div>
+            <!-- Notice Box: Incoming / Development Notice -->
+            <div class="mb-5 p-5 sm:p-6 rounded-2xl shadow-xs text-center flex flex-col items-center"
+                style="background: var(--index-soft); border: 1.5px solid var(--index);">
+                <h3 class="font-serif-instrument text-2xl sm:text-3xl font-bold uppercase tracking-widest leading-tight text-center"
+                    style="color: var(--index);">
+                    INCOMING
+                </h3>
+                <p class="text-xs sm:text-sm leading-relaxed mt-2.5 text-center max-w-sm" style="color: var(--ink);">
+                    For now your data would not be saved due to the app still being developed, but you will still be
+                    able to prepare for your exam with our app, it's just your progress will not be saved. Good luck
+                    with your exam!
+                </p>
+                <p class="text-xs sm:text-[13px] leading-relaxed mt-2 text-center" style="color: var(--ink-soft);">
+                    By <strong>xebvyawkxrkusw(key10)</strong>
+                </p>
             </div>
 
             <!-- Close / Acknowledge Button -->
-            <button id="auth-btn-acknowledge" class="w-full py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md hover:scale-[1.01] active:scale-[0.99] font-serif-instrument text-base" style="background: var(--index); color: #fff;">
+            <button id="auth-btn-acknowledge"
+                class="w-full py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md hover:scale-[1.01] active:scale-[0.99] font-serif-instrument text-base"
+                style="background: var(--index); color: #fff;">
                 <span>Got It, Back to Questions</span>
                 <i class="fa-solid fa-check text-xs"></i>
             </button>
