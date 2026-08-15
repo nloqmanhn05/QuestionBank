@@ -17,6 +17,35 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- External Stylesheet -->
     <link rel="stylesheet" href="styles.css">
+
+    <!-- Firebase & Google Analytics SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+        import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCq9TElPYzJBVDasyLoFd_N47ORdwk37CQ",
+            authDomain: "questionbank-931e8.firebaseapp.com",
+            projectId: "questionbank-931e8",
+            storageBucket: "questionbank-931e8.firebasestorage.app",
+            messagingSenderId: "67582456744",
+            appId: "1:67582456744:web:5d0539dfe8337ea8a0239d",
+            measurementId: "G-6QNBR07VH5"
+        };
+
+        // Initialize Firebase & Analytics
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+
+        // Expose safe logging helper for script.js
+        window.logAnalyticsEvent = function(eventName, eventParams = {}) {
+            try {
+                logEvent(analytics, eventName, eventParams);
+            } catch (err) {
+                console.warn("Analytics log error:", err);
+            }
+        };
+    </script>
 </head>
 
 <body class="flex flex-col h-screen max-h-screen overflow-hidden custom-scrollbar">
