@@ -401,6 +401,8 @@ body {
 }
 
 #tour-backdrop {
+    opacity: 0 !important;
+    pointer-events: none !important;
     transition: opacity 0.35s ease;
 }
 
@@ -410,6 +412,8 @@ body {
 }
 
 #tour-spotlight {
+    opacity: 0 !important;
+    pointer-events: none !important;
     transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 width 0.4s cubic-bezier(0.4, 0, 0.2, 1),
@@ -422,6 +426,9 @@ body {
 }
 
 #tour-popover {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: scale(0.95) !important;
     transition: top 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 left 0.4s cubic-bezier(0.4, 0, 0.2, 1),
                 opacity 0.3s ease,

@@ -2949,9 +2949,23 @@ function endTour(isCompleted = false) {
     isTourActive = false;
     isForcedTour = false;
     trackEvent('end_tour', { last_step: currentTourStepIndex + 1, completed: isCompleted });
-    if (tourBackdropEl) tourBackdropEl.classList.remove('active');
-    if (tourSpotlightEl) tourSpotlightEl.classList.remove('active');
-    if (tourPopoverEl) tourPopoverEl.classList.remove('active');
+
+    if (tourBackdropEl) {
+        tourBackdropEl.classList.remove('active');
+    }
+    if (tourSpotlightEl) {
+        tourSpotlightEl.classList.remove('active');
+        tourSpotlightEl.style.top = '-9999px';
+        tourSpotlightEl.style.left = '-9999px';
+        tourSpotlightEl.style.width = '0px';
+        tourSpotlightEl.style.height = '0px';
+    }
+    if (tourPopoverEl) {
+        tourPopoverEl.classList.remove('active');
+        tourPopoverEl.style.opacity = '';
+        tourPopoverEl.style.top = '-9999px';
+        tourPopoverEl.style.left = '-9999px';
+    }
 
     // Remove highlight class and stroke ring from any active element
     document.querySelectorAll('.tour-highlighted-element').forEach(el => {
@@ -3039,14 +3053,11 @@ function positionSpotlightAndPopover(targetEl) {
     tourSpotlightEl.style.width = `${spotWidth}px`;
     tourSpotlightEl.style.height = `${spotHeight}px`;
 
-    // Measure real popover size
+    // Measure real popover size without persisting inline opacity
     tourPopoverEl.style.visibility = 'hidden';
-    tourPopoverEl.style.opacity = '1';
-    tourPopoverEl.style.top = '0px';
-    tourPopoverEl.style.left = '0px';
     const popRect = tourPopoverEl.getBoundingClientRect();
-    const popW = popRect.width;
-    const popH = popRect.height;
+    const popW = popRect.width || 360;
+    const popH = popRect.height || 200;
     tourPopoverEl.style.visibility = '';
 
     const vw = window.innerWidth;
