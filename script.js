@@ -340,7 +340,7 @@
                     {
                         q: "What is the original Greek word from which 'Ethics' is derived, and what does it mean?",
                         options: [
-                            "Ethos – meaning character or custom",
+                            "Ethicss – meaning character or custom",
                             "Logos – meaning logic or reason",
                             "Pathos – meaning feeling or emotion",
                             "Polis – meaning city state"
