@@ -2839,8 +2839,14 @@
             currentTourStepIndex = index;
             const step = TOUR_STEPS[index];
 
+            // Remove previous highlight from any element
+            document.querySelectorAll('.tour-highlighted-element').forEach(el => {
+                el.classList.remove('tour-highlighted-element');
+            });
+
             const targetEl = document.querySelector(step.target);
             if (targetEl) {
+                targetEl.classList.add('tour-highlighted-element');
                 targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 positionSpotlightAndPopover(targetEl);
             }
