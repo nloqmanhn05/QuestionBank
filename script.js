@@ -2827,6 +2827,11 @@
             if (tourSpotlightEl) tourSpotlightEl.classList.remove('active');
             if (tourPopoverEl) tourPopoverEl.classList.remove('active');
 
+            // Remove highlight class and stroke ring from any active element
+            document.querySelectorAll('.tour-highlighted-element').forEach(el => {
+                el.classList.remove('tour-highlighted-element');
+            });
+
             try {
                 localStorage.setItem('question_bank_tour_seen', 'true');
             } catch (e) { }
