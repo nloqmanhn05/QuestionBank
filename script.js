@@ -3303,8 +3303,10 @@ function initAuthListeners() {
         });
     }
 
+    const authBtnAcknowledgeEl = document.getElementById('auth-btn-acknowledge');
     if (btnOpenAuthEl) btnOpenAuthEl.onclick = () => openAuthModal('signin');
     if (authBtnCloseEl) authBtnCloseEl.onclick = () => closeAuthModal();
+    if (authBtnAcknowledgeEl) authBtnAcknowledgeEl.onclick = () => closeAuthModal();
 
     if (authModalBackdropEl) {
         authModalBackdropEl.onclick = (e) => {

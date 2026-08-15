@@ -423,77 +423,25 @@
             </div>
 
             <!-- Notice Box: Incoming / Development Notice -->
-            <div class="mb-4 p-3.5 sm:p-4 rounded-2xl flex items-start gap-3 shadow-xs" style="background: var(--index-soft); border: 1.5px solid var(--index);">
-                <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 text-sm mt-0.5" style="background: var(--index); color: #fff;">
+            <div class="mb-5 p-4 sm:p-5 rounded-2xl flex items-start gap-3.5 shadow-xs" style="background: var(--index-soft); border: 1.5px solid var(--index);">
+                <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-base mt-0.5 shadow-xs" style="background: var(--index); color: #fff;">
                     <i class="fa-solid fa-hourglass-half"></i>
                 </div>
                 <div>
-                    <h3 class="font-serif-instrument text-lg sm:text-xl font-bold leading-tight" style="color: var(--index);">
+                    <h3 class="font-serif-instrument text-xl sm:text-2xl font-bold leading-tight" style="color: var(--index);">
                         Incoming
                     </h3>
-                    <p class="text-xs sm:text-[13px] leading-relaxed mt-1" style="color: var(--ink);">
+                    <p class="text-xs sm:text-sm leading-relaxed mt-2" style="color: var(--ink);">
                         For now your data would not be saved due to the app still being developed, but you will still be able to prepare for your exam with our app, it's just your progress will not be saved. Good luck with your exam!
                     </p>
                 </div>
             </div>
 
-            <!-- Tab Switcher -->
-            <div class="grid grid-cols-2 p-1 rounded-2xl mb-4" style="background: var(--paper); border: 1px solid var(--card-line);">
-                <button id="tab-btn-signin" class="py-2 rounded-xl text-xs sm:text-sm font-bold font-serif-instrument transition cursor-pointer" style="background: var(--paper-raised); color: var(--index); box-shadow: 0 2px 6px rgba(0,0,0,0.06);">
-                    Sign In
-                </button>
-                <button id="tab-btn-signup" class="py-2 rounded-xl text-xs sm:text-sm font-semibold font-serif-instrument transition cursor-pointer" style="color: var(--ink-soft);">
-                    Create Account
-                </button>
-            </div>
-
-            <!-- Error Banner -->
-            <div id="auth-error-banner" class="hidden mb-4 p-3 rounded-xl text-xs flex items-center gap-2" style="background: var(--wrong-soft); color: var(--wrong); border: 1px solid #e8cec3;">
-                <i class="fa-solid fa-circle-exclamation flex-shrink-0"></i>
-                <span id="auth-error-text" class="leading-tight"></span>
-            </div>
-
-            <!-- Auth Form -->
-            <form id="auth-form" class="space-y-3.5" onsubmit="return false;">
-                <!-- Display Name Field (Visible on Sign Up only) -->
-                <div id="auth-name-group" class="hidden">
-                    <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 font-serif-instrument text-sm" style="color: var(--ink-soft);">
-                        Full Name
-                    </label>
-                    <div class="relative">
-                        <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--ink-soft);"></i>
-                        <input id="auth-name-input" type="text" placeholder="e.g. Alex Tan" class="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm transition focus:outline-none" style="background: var(--paper); border: 1.5px solid var(--card-line); color: var(--ink);">
-                    </div>
-                </div>
-
-                <!-- Email Field -->
-                <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 font-serif-instrument text-sm" style="color: var(--ink-soft);">
-                        Email Address
-                    </label>
-                    <div class="relative">
-                        <i class="fa-solid fa-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--ink-soft);"></i>
-                        <input id="auth-email-input" type="email" required placeholder="you@example.com" class="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm transition focus:outline-none" style="background: var(--paper); border: 1.5px solid var(--card-line); color: var(--ink);">
-                    </div>
-                </div>
-
-                <!-- Password Field -->
-                <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 font-serif-instrument text-sm" style="color: var(--ink-soft);">
-                        Password
-                    </label>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-xs" style="color: var(--ink-soft);"></i>
-                        <input id="auth-password-input" type="password" required placeholder="••••••••" class="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm transition focus:outline-none" style="background: var(--paper); border: 1.5px solid var(--card-line); color: var(--ink);">
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button id="auth-btn-submit" type="submit" class="w-full py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md hover:scale-[1.01] active:scale-[0.99] font-serif-instrument text-base" style="background: var(--index); color: #fff;">
-                    <span id="auth-btn-submit-text">Sign In</span>
-                    <i id="auth-btn-submit-icon" class="fa-solid fa-arrow-right text-xs"></i>
-                </button>
-            </form>
+            <!-- Close / Acknowledge Button -->
+            <button id="auth-btn-acknowledge" class="w-full py-2.5 px-4 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer shadow-md hover:scale-[1.01] active:scale-[0.99] font-serif-instrument text-base" style="background: var(--index); color: #fff;">
+                <span>Got It, Back to Questions</span>
+                <i class="fa-solid fa-check text-xs"></i>
+            </button>
         </div>
     </div>
 
