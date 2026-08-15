@@ -351,3 +351,52 @@ body {
         display: none !important;
     }
 }
+
+/* ==========================================
+   Onboarding Tour Spotlight & Popover Styles
+   ========================================== */
+@keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+    animation: spin-slow 12s linear infinite;
+}
+
+#tour-backdrop.active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+#tour-spotlight.active {
+    opacity: 1 !important;
+}
+
+#tour-popover.active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: scale(1) !important;
+}
+
+.tour-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 9999px;
+    background-color: var(--card-line);
+    transition: all 0.2s ease;
+}
+
+.tour-dot.active {
+    width: 16px;
+    background-color: var(--index);
+}
+
+.tour-highlighted-element {
+    position: relative !important;
+    z-index: 9999 !important;
+    box-shadow: 0 0 0 4px var(--index), 0 10px 25px -5px rgba(0, 0, 0, 0.2) !important;
+    border-radius: 16px !important;
+    transition: box-shadow 0.3s ease !important;
+}
+

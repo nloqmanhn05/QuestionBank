@@ -2731,7 +2731,236 @@
             } catch (e) { }
         })();
 
+        // ====================================================
+        // ONBOARDING TOUR CONTROLLER
+        // ====================================================
+        const TOUR_STEPS = [
+            {
+                target: "#sidebar-toggle",
+                title: "Sidebar Navigation Toggle",
+                icon: "fa-solid fa-graduation-cap",
+                desc: "Click here anytime to collapse or expand the navigation sidebar for a distraction-free learning experience."
+            },
+            {
+                target: "#btn-start-tour",
+                title: "Tour Guide Button",
+                icon: "fa-solid fa-compass",
+                desc: "You can click this button at any time to replay this interactive guide whenever you need a quick overview of the features."
+            },
+            {
+                target: ".stats-row",
+                title: "Global Score & Accuracy",
+                icon: "fa-solid fa-chart-pie",
+                desc: "Monitors your overall performance in real-time across all 210 questions in the master question bank."
+            },
+            {
+                target: "#chapter-list",
+                title: "Course Chapter Selection",
+                icon: "fa-solid fa-book-open",
+                desc: "Browse and select any of the 7 core chapters (30 questions each) to target specific subjects like ICT Professions, Ethics, Privacy, or IP."
+            },
+            {
+                target: ".progress-block",
+                title: "Chapter Progress & Reset",
+                icon: "fa-solid fa-rotate-left",
+                desc: "Shows your active chapter completion bar. Click 'Reset Chapter' if you want to wipe answers for this chapter and retake the questions."
+            },
+            {
+                target: ".pane-quick-jump",
+                title: "Quick Jump Navigation Grid",
+                icon: "fa-solid fa-border-all",
+                desc: "30 interactive question dots showing real-time feedback: 🟢 Green (Correct), 🔴 Red (Wrong), or ⚪ Gray (Unanswered). Click any dot to jump directly to that question."
+            },
+            {
+                target: "#q-nav-buttons",
+                title: "Previous & Next Question Arrows",
+                icon: "fa-solid fa-arrows-left-right",
+                desc: "Click the left (←) or right (→) arrow buttons to navigate smoothly between questions within the current chapter."
+            },
+            {
+                target: "#options-container",
+                title: "Multiple-Choice Answer Cards",
+                icon: "fa-solid fa-list-check",
+                desc: "Select an option to test your knowledge! Submitting an answer instantly reveals if it is correct, complete with detailed explanations and course slide references."
+            }
+        ];
+
+        let currentTourStepIndex = 0;
+        let isTourActive = false;
+
+        const tourBackdropEl = document.getElementById('tour-backdrop');
+        const tourSpotlightEl = document.getElementById('tour-spotlight');
+        const tourPopoverEl = document.getElementById('tour-popover');
+        const tourStepBadgeEl = document.getElementById('tour-step-badge');
+        const tourTitleTextEl = document.getElementById('tour-title-text');
+        const tourIconEl = document.getElementById('tour-icon');
+        const tourDescEl = document.getElementById('tour-desc');
+        const tourBtnPrevEl = document.getElementById('tour-btn-prev');
+        const tourBtnNextEl = document.getElementById('tour-btn-next');
+        const tourBtnNextTextEl = document.getElementById('tour-btn-next-text');
+        const tourBtnNextIconEl = document.getElementById('tour-btn-next-icon');
+        const tourBtnSkipEl = document.getElementById('tour-btn-skip');
+        const tourDotsIndicatorEl = document.getElementById('tour-dots-indicator');
+        const btnStartTourEl = document.getElementById('btn-start-tour');
+
+        function startTour() {
+            isTourActive = true;
+            currentTourStepIndex = 0;
+            if (tourBackdropEl) tourBackdropEl.classList.add('active');
+            if (tourSpotlightEl) tourSpotlightEl.classList.add('active');
+            if (tourPopoverEl) tourPopoverEl.classList.add('active');
+            renderTourDots();
+            showTourStep(currentTourStepIndex);
+        }
+
+        function endTour() {
+            isTourActive = false;
+            if (tourBackdropEl) tourBackdropEl.classList.remove('active');
+            if (tourSpotlightEl) tourSpotlightEl.classList.remove('active');
+            if (tourPopoverEl) tourPopoverEl.classList.remove('active');
+
+            try {
+                localStorage.setItem('question_bank_tour_seen', 'true');
+            } catch (e) { }
+        }
+
+        function renderTourDots() {
+            if (!tourDotsIndicatorEl) return;
+            tourDotsIndicatorEl.innerHTML = '';
+            TOUR_STEPS.forEach((_, idx) => {
+                const dot = document.createElement('div');
+                dot.className = `tour-dot ${idx === currentTourStepIndex ? 'active' : ''}`;
+                tourDotsIndicatorEl.appendChild(dot);
+            });
+        }
+
+        function showTourStep(index) {
+            if (index < 0 || index >= TOUR_STEPS.length) return;
+            currentTourStepIndex = index;
+            const step = TOUR_STEPS[index];
+
+            const targetEl = document.querySelector(step.target);
+            if (targetEl) {
+                targetEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                positionSpotlightAndPopover(targetEl);
+            }
+
+            // Update text content
+            if (tourStepBadgeEl) tourStepBadgeEl.textContent = `Step ${index + 1} of ${TOUR_STEPS.length}`;
+            if (tourTitleTextEl) tourTitleTextEl.textContent = step.title;
+            if (tourIconEl) tourIconEl.className = `${step.icon} text-base`;
+            if (tourDescEl) tourDescEl.textContent = step.desc;
+
+            // Update Prev button state
+            if (tourBtnPrevEl) {
+                tourBtnPrevEl.disabled = index === 0;
+            }
+
+            // Update Next / Finish button state
+            if (index === TOUR_STEPS.length - 1) {
+                if (tourBtnNextTextEl) tourBtnNextTextEl.textContent = 'Got It!';
+                if (tourBtnNextIconEl) tourBtnNextIconEl.className = 'fa-solid fa-check text-[10px]';
+            } else {
+                if (tourBtnNextTextEl) tourBtnNextTextEl.textContent = 'Next';
+                if (tourBtnNextIconEl) tourBtnNextIconEl.className = 'fa-solid fa-chevron-right text-[10px]';
+            }
+
+            renderTourDots();
+        }
+
+        function positionSpotlightAndPopover(targetEl) {
+            if (!targetEl || !tourSpotlightEl || !tourPopoverEl) return;
+            const rect = targetEl.getBoundingClientRect();
+            const padding = 6;
+
+            const top = Math.max(0, rect.top - padding);
+            const left = Math.max(0, rect.left - padding);
+            const width = rect.width + (padding * 2);
+            const height = rect.height + (padding * 2);
+
+            tourSpotlightEl.style.top = `${top}px`;
+            tourSpotlightEl.style.left = `${left}px`;
+            tourSpotlightEl.style.width = `${width}px`;
+            tourSpotlightEl.style.height = `${height}px`;
+
+            // Position Popover nicely relative to target & window viewport
+            const popoverWidth = Math.min(window.innerWidth * 0.9, 390);
+            const popoverHeight = 220; // estimated max height
+
+            let popTop = top + height + 12;
+            let popLeft = left + (width / 2) - (popoverWidth / 2);
+
+            // If popping below goes offscreen, place above target
+            if (popTop + popoverHeight > window.innerHeight - 20) {
+                popTop = Math.max(12, top - popoverHeight - 12);
+            }
+
+            // Keep within horizontal bounds
+            if (popLeft < 12) popLeft = 12;
+            if (popLeft + popoverWidth > window.innerWidth - 12) {
+                popLeft = window.innerWidth - popoverWidth - 12;
+            }
+
+            tourPopoverEl.style.top = `${popTop}px`;
+            tourPopoverEl.style.left = `${popLeft}px`;
+        }
+
+        // Tour Button Listeners
+        if (btnStartTourEl) {
+            btnStartTourEl.onclick = () => startTour();
+        }
+        if (tourBtnNextEl) {
+            tourBtnNextEl.onclick = () => {
+                if (currentTourStepIndex < TOUR_STEPS.length - 1) {
+                    showTourStep(currentTourStepIndex + 1);
+                } else {
+                    endTour();
+                }
+            };
+        }
+        if (tourBtnPrevEl) {
+            tourBtnPrevEl.onclick = () => {
+                if (currentTourStepIndex > 0) {
+                    showTourStep(currentTourStepIndex - 1);
+                }
+            };
+        }
+        if (tourBtnSkipEl) {
+            tourBtnSkipEl.onclick = () => endTour();
+        }
+        if (tourBackdropEl) {
+            tourBackdropEl.onclick = () => endTour();
+        }
+
+        // Keyboard navigation for Tour
+        window.addEventListener('keydown', (e) => {
+            if (!isTourActive) return;
+            if (e.key === 'ArrowRight') {
+                if (currentTourStepIndex < TOUR_STEPS.length - 1) showTourStep(currentTourStepIndex + 1);
+                else endTour();
+            } else if (e.key === 'ArrowLeft') {
+                if (currentTourStepIndex > 0) showTourStep(currentTourStepIndex - 1);
+            } else if (e.key === 'Escape') {
+                endTour();
+            }
+        });
+
+        // Window resize repositioning
+        window.addEventListener('resize', () => {
+            if (isTourActive && TOUR_STEPS[currentTourStepIndex]) {
+                const targetEl = document.querySelector(TOUR_STEPS[currentTourStepIndex].target);
+                if (targetEl) positionSpotlightAndPopover(targetEl);
+            }
+        });
+
         // Initialize on load
         window.onload = function () {
             initApp();
+            setTimeout(() => {
+                try {
+                    if (!localStorage.getItem('question_bank_tour_seen')) {
+                        startTour();
+                    }
+                } catch (e) { }
+            }, 700);
         };

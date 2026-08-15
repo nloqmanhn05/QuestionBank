@@ -6,6 +6,7 @@ An interactive, responsive, and modern web application designed for students and
 
 ## 🌟 Features
 
+- **🧩 Interactive Onboarding Tour**: Step-by-step guided walkthrough highlighting and explaining every button and UI component on first visit or on demand via the **Tour Guide** button.
 - **📚 210 Curated Practice Questions**: Distributed evenly across 7 core course chapters (30 questions per chapter).
 - **💡 Instant Explanations & Slide References**: Every question provides immediate feedback, complete with detailed rationale and course slide citations (e.g., *Slide 3, Chapter 1*).
 - **⚡ Quick Jump Navigation Grid**: Interactive 30-dot matrix pane allows seamless jump to any question with real-time status indicators (🟢 Correct / 🔴 Wrong / ⚪ Unanswered).
