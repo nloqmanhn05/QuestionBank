@@ -22,7 +22,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
         import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-analytics.js";
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -35,10 +34,9 @@
             measurementId: "G-6QNBR07VH5"
         };
 
-        // Initialize Firebase, Analytics, Firestore & Auth
+        // Initialize Firebase & Analytics
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-        const db = getFirestore(app);
         const auth = getAuth(app);
 
         // Expose safe logging helper for script.js
@@ -48,33 +46,6 @@
             } catch (err) {
                 console.warn("Analytics log error:", err);
             }
-        };
-
-        // Expose Firestore user progress helpers for script.js
-        window.saveUserProgressToFirestore = async function (userId, userState, extraData = {}) {
-            try {
-                const userDocRef = doc(db, "user_progress", userId);
-                await setDoc(userDocRef, {
-                    progress: userState,
-                    ...extraData,
-                    updatedAt: serverTimestamp()
-                }, { merge: true });
-            } catch (err) {
-                console.warn("Firestore save error:", err);
-            }
-        };
-
-        window.loadUserProgressFromFirestore = async function (userId) {
-            try {
-                const userDocRef = doc(db, "user_progress", userId);
-                const docSnap = await getDoc(userDocRef);
-                if (docSnap.exists()) {
-                    return docSnap.data();
-                }
-            } catch (err) {
-                console.warn("Firestore load error:", err);
-            }
-            return null;
         };
 
         // Expose Firebase Auth helpers for script.js

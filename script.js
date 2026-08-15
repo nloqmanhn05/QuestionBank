@@ -2463,16 +2463,9 @@ function getActiveUserId() {
 }
 
 function saveProgress() {
-    // 1. Instant local storage cache
     try {
         localStorage.setItem('qb_user_state', JSON.stringify(userState));
     } catch (e) {}
-
-    // 2. Cloud Firestore sync (bound to auth account if logged in)
-    const activeUid = getActiveUserId();
-    if (typeof window.saveUserProgressToFirestore === 'function') {
-        window.saveUserProgressToFirestore(activeUid, userState);
-    }
 }
 
 function loadCachedProgress() {
@@ -2487,22 +2480,7 @@ function loadCachedProgress() {
     } catch (e) {}
 }
 
-async function syncProgressFromFirestore() {
-    const activeUid = getActiveUserId();
-    if (typeof window.loadUserProgressFromFirestore === 'function') {
-        const remoteProgress = await window.loadUserProgressFromFirestore(activeUid);
-        if (remoteProgress && typeof remoteProgress === 'object') {
-            userState = { ...userState, ...remoteProgress };
-            try {
-                localStorage.setItem('qb_user_state', JSON.stringify(userState));
-            } catch (e) {}
-            // Update UI with cloud synced progress
-            renderChapterSidebar();
-            loadQuestion(currentChapterKey, currentQuestionIndex);
-            updateGlobalStats();
-        }
-    }
-}
+
 
 function initApp() {
     loadCachedProgress();
@@ -2510,7 +2488,6 @@ function initApp() {
     loadQuestion(currentChapterKey, currentQuestionIndex);
     updateGlobalStats();
     trackEvent('app_initialized');
-    syncProgressFromFirestore();
     initAuthListeners();
 }
 
@@ -2954,33 +2931,22 @@ function endTour(isCompleted = false) {
     isForcedTour = false;
     trackEvent('end_tour', { last_step: currentTourStepIndex + 1, completed: isCompleted });
 
+    // Immediately hide all tour elements
     if (tourBackdropEl) {
         tourBackdropEl.classList.remove('active');
-        setTimeout(() => {
-            if (!isTourActive && tourBackdropEl) tourBackdropEl.style.display = 'none';
-        }, 300);
+        tourBackdropEl.style.display = 'none';
     }
     if (tourSpotlightEl) {
         tourSpotlightEl.classList.remove('active');
-        tourSpotlightEl.style.top = '-9999px';
-        tourSpotlightEl.style.left = '-9999px';
-        tourSpotlightEl.style.width = '0px';
-        tourSpotlightEl.style.height = '0px';
-        setTimeout(() => {
-            if (!isTourActive && tourSpotlightEl) tourSpotlightEl.style.display = 'none';
-        }, 300);
+        tourSpotlightEl.style.display = 'none';
     }
     if (tourPopoverEl) {
         tourPopoverEl.classList.remove('active');
+        tourPopoverEl.style.display = 'none';
         tourPopoverEl.style.opacity = '';
-        tourPopoverEl.style.top = '-9999px';
-        tourPopoverEl.style.left = '-9999px';
-        setTimeout(() => {
-            if (!isTourActive && tourPopoverEl) tourPopoverEl.style.display = 'none';
-        }, 300);
     }
 
-    // Remove highlight class and stroke ring from any active element
+    // Remove highlight class from any active element
     document.querySelectorAll('.tour-highlighted-element').forEach(el => {
         el.classList.remove('tour-highlighted-element');
     });
@@ -2991,10 +2957,6 @@ function endTour(isCompleted = false) {
             localStorage.setItem('qb_tour_done_' + currentAuthUser.uid, 'true');
         }
     } catch (e) { }
-
-    if (currentAuthUser && typeof window.saveUserProgressToFirestore === 'function') {
-        window.saveUserProgressToFirestore(currentAuthUser.uid, userState, { tourCompleted: true });
-    }
 }
 
 function renderTourDots() {
@@ -3292,17 +3254,8 @@ async function updateAuthUI(user, isNewUserRegistration = false) {
 
         closeAuthModal();
 
-        // Load progress & check tour status from cloud
-        let isTourDone = localStorage.getItem('qb_tour_done_' + user.uid) === 'true';
-        const remoteData = await window.loadUserProgressFromFirestore(user.uid);
-        if (remoteData) {
-            if (remoteData.progress) {
-                userState = { ...userState, ...remoteData.progress };
-            }
-            if (remoteData.tourCompleted) {
-                isTourDone = true;
-            }
-        }
+        // Check tour status from localStorage
+        const isTourDone = localStorage.getItem('qb_tour_done_' + user.uid) === 'true';
 
         renderChapterSidebar();
         loadQuestion(currentChapterKey, currentQuestionIndex);
