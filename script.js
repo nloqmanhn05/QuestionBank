@@ -2453,8 +2453,8 @@
                 const isComplete = answeredCount === 30;
 
                 const btn = document.createElement('button');
-                btn.className = `chapter-btn w-full text-left p-3 rounded-xl transition flex flex-col gap-1 relative ${isActive
-                    ? 'shadow-sm'
+                btn.className = `chapter-btn w-full text-left p-2.5 sm:p-3 rounded-xl transition flex flex-col gap-1 relative ${isActive
+                    ? 'active-chap-btn shadow-sm'
                     : 'hover:bg-[var(--paper)]'
                     }`;
                 btn.style.border = isActive ? '1.5px solid var(--index)' : '1.5px solid var(--card-line)';
@@ -2469,14 +2469,14 @@
                 };
 
                 btn.innerHTML = `
-                    <div class="full-info w-full flex flex-col gap-1">
-                        <div class="flex justify-between items-center w-full">
+                    <div class="full-info w-full flex flex-col gap-0.5">
+                        <div class="flex justify-between items-center w-full gap-2">
                             <span class="font-mono font-bold text-xs uppercase tracking-wide" style="color: ${isActive ? 'var(--index)' : 'var(--ink-soft)'}">Chapter ${chapNum}</span>
-                            <span class="text-[10px] px-2 py-0.5 rounded-full font-mono font-semibold" style="${isComplete ? 'background: var(--correct-soft); color: var(--correct);' : 'background: var(--paper); color: var(--ink-soft); border: 1px solid var(--card-line);'}">
+                            <span class="text-[10px] px-1.5 py-0.5 rounded-full font-mono font-semibold" style="${isComplete ? 'background: var(--correct-soft); color: var(--correct);' : 'background: var(--paper); color: var(--ink-soft); border: 1px solid var(--card-line);'}">
                                 ${answeredCount}/30
                             </span>
                         </div>
-                        <span class="text-sm line-clamp-1 font-medium" style="color: var(--ink);">${shortTitle}</span>
+                        <span class="text-xs sm:text-sm line-clamp-1 font-medium truncate" style="color: var(--ink);">${shortTitle}</span>
                     </div>
                     <div class="mini-info hidden w-full h-full flex flex-col items-center justify-center">
                         <span class="font-mono font-bold text-sm leading-none" style="color: ${isActive ? 'var(--index)' : 'var(--ink)'}">C${chapNum}</span>
@@ -2488,6 +2488,14 @@
 
                 chapterListEl.appendChild(btn);
             });
+
+            // Scroll active tab into view horizontally on mobile
+            const activeBtn = chapterListEl.querySelector('.active-chap-btn');
+            if (activeBtn && window.innerWidth < 1024) {
+                setTimeout(() => {
+                    activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }, 50);
+            }
         }
 
         function loadQuestion(chapKey, qIdx) {

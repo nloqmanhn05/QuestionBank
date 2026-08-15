@@ -128,8 +128,8 @@ body {
     transition: transform 0.22s ease, background 0.15s ease, color 0.15s ease;
 }
 
-/* ===== PHONE (< 640px) ===== */
-@media (max-width: 639px) {
+/* ===== MOBILE & TABLET RESPONSIVE LAYOUT (< 1024px) ===== */
+@media (max-width: 1023px) {
     body {
         height: auto !important;
         max-height: none !important;
@@ -140,21 +140,50 @@ body {
         width: 100% !important;
         height: auto !important;
         border-right: none !important;
-        border-bottom: 1px solid var(--card-line);
+        border-bottom: 1px solid var(--card-line) !important;
         position: relative;
+        flex-shrink: 0;
     }
 
-    #sidebar .sidebar-body-center {
-        overflow-y: visible !important;
-        max-height: none !important;
-    }
-
-    #sidebar.collapsed #chapter-list,
-    #sidebar.collapsed .stats-row,
-    #sidebar.collapsed .progress-block,
-    #sidebar.collapsed .chapter-intro,
-    #sidebar.collapsed .sidebar-body-center {
+    #sidebar-toggle {
         display: none !important;
+    }
+
+    .brand-container {
+        padding: 0.75rem 1rem !important;
+    }
+
+    .sidebar-body-center {
+        overflow: visible !important;
+        max-height: none !important;
+        padding: 0 !important;
+    }
+
+    .chapter-intro {
+        display: none !important;
+    }
+
+    #chapter-list {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        white-space: nowrap !important;
+        gap: 0.5rem !important;
+        padding: 0.5rem 1rem !important;
+        max-height: none !important;
+        width: 100% !important;
+        -webkit-overflow-scrolling: touch;
+        border-bottom: 1px solid var(--card-line);
+    }
+
+    #chapter-list .chapter-btn {
+        flex-shrink: 0 !important;
+        width: auto !important;
+        min-width: 140px !important;
+        max-width: 220px !important;
+        padding: 0.5rem 0.75rem !important;
+        border-radius: 12px !important;
     }
 
     .main-container {
@@ -171,8 +200,12 @@ body {
     .content-body {
         overflow: visible !important;
         height: auto !important;
+        padding: 0.75rem 0.5rem !important;
     }
+}
 
+/* ===== PHONE (< 640px) ===== */
+@media (max-width: 639px) {
     .two-pane-container {
         flex-direction: column !important;
         overflow: visible !important;
@@ -207,49 +240,6 @@ body {
 
 /* ===== TABLET (640px – 1023px) ===== */
 @media (min-width: 640px) and (max-width: 1023px) {
-    body {
-        height: auto !important;
-        max-height: none !important;
-        overflow-y: auto !important;
-    }
-
-    #sidebar {
-        width: 100% !important;
-        height: auto !important;
-        border-right: none !important;
-        border-bottom: 1px solid var(--card-line);
-        position: relative;
-    }
-
-    #sidebar .sidebar-body-center {
-        overflow-y: visible !important;
-        max-height: none !important;
-    }
-
-    #sidebar.collapsed #chapter-list,
-    #sidebar.collapsed .stats-row,
-    #sidebar.collapsed .progress-block,
-    #sidebar.collapsed .chapter-intro,
-    #sidebar.collapsed .sidebar-body-center {
-        display: none !important;
-    }
-
-    .main-container {
-        flex-direction: column !important;
-        height: auto !important;
-        overflow: visible !important;
-    }
-
-    .main-content-column {
-        height: auto !important;
-        overflow: visible !important;
-    }
-
-    .content-body {
-        overflow: visible !important;
-        height: auto !important;
-    }
-
     .two-pane-container {
         flex-direction: row !important;
         overflow: visible !important;
@@ -257,18 +247,13 @@ body {
     }
 
     .pane-quick-jump {
-        width: 20% !important;
+        width: 25% !important;
     }
 
     .pane-question {
-        width: 80% !important;
+        width: 75% !important;
         height: auto !important;
         overflow: visible !important;
-    }
-
-    .pane-question .bento.question-card {
-        overflow: visible !important;
-        max-height: none !important;
     }
 
     #question-grid-nav {
