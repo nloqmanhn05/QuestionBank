@@ -229,6 +229,11 @@ body {
         max-height: none !important;
     }
 
+    #feedback-panel {
+        scroll-margin-top: 1rem;
+        scroll-margin-bottom: 2rem;
+    }
+
     #question-grid-nav {
         grid-template-columns: repeat(6, 1fr) !important;
     }

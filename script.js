@@ -2606,6 +2606,13 @@
             loadQuestion(chapKey, qIdx);
             renderChapterSidebar();
             updateGlobalStats();
+
+            // Auto-scroll to explanation on mobile screens so it is immediately visible
+            if (window.innerWidth < 1024 && feedbackPanelEl) {
+                setTimeout(() => {
+                    feedbackPanelEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 80);
+            }
         }
 
         function renderQuestionGridNav() {
