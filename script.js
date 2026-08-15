@@ -2933,25 +2933,32 @@ function startTour(forceMandatory = false) {
         }
     }
 
-    if (tourBackdropEl) tourBackdropEl.classList.add('active');
-    if (tourSpotlightEl) tourSpotlightEl.classList.add('active');
-    if (tourPopoverEl) tourPopoverEl.classList.add('active');
+    if (tourBackdropEl) {
+        tourBackdropEl.style.display = 'block';
+        setTimeout(() => { if (tourBackdropEl) tourBackdropEl.classList.add('active'); }, 10);
+    }
+    if (tourSpotlightEl) {
+        tourSpotlightEl.style.display = 'block';
+        setTimeout(() => { if (tourSpotlightEl) tourSpotlightEl.classList.add('active'); }, 10);
+    }
+    if (tourPopoverEl) {
+        tourPopoverEl.style.display = 'block';
+        setTimeout(() => { if (tourPopoverEl) tourPopoverEl.classList.add('active'); }, 10);
+    }
     renderTourDots();
     showTourStep(currentTourStepIndex);
 }
 
 function endTour(isCompleted = false) {
-    // If it's a mandatory tour for new users, do not allow ending before completion
-    if (isForcedTour && !isCompleted && currentTourStepIndex < TOUR_STEPS.length - 1) {
-        return;
-    }
-
     isTourActive = false;
     isForcedTour = false;
     trackEvent('end_tour', { last_step: currentTourStepIndex + 1, completed: isCompleted });
 
     if (tourBackdropEl) {
         tourBackdropEl.classList.remove('active');
+        setTimeout(() => {
+            if (!isTourActive && tourBackdropEl) tourBackdropEl.style.display = 'none';
+        }, 300);
     }
     if (tourSpotlightEl) {
         tourSpotlightEl.classList.remove('active');
@@ -2959,12 +2966,18 @@ function endTour(isCompleted = false) {
         tourSpotlightEl.style.left = '-9999px';
         tourSpotlightEl.style.width = '0px';
         tourSpotlightEl.style.height = '0px';
+        setTimeout(() => {
+            if (!isTourActive && tourSpotlightEl) tourSpotlightEl.style.display = 'none';
+        }, 300);
     }
     if (tourPopoverEl) {
         tourPopoverEl.classList.remove('active');
         tourPopoverEl.style.opacity = '';
         tourPopoverEl.style.top = '-9999px';
         tourPopoverEl.style.left = '-9999px';
+        setTimeout(() => {
+            if (!isTourActive && tourPopoverEl) tourPopoverEl.style.display = 'none';
+        }, 300);
     }
 
     // Remove highlight class and stroke ring from any active element
@@ -3385,11 +3398,4 @@ function initAuthListeners() {
 // Initialize on load
 window.onload = function () {
     initApp();
-    setTimeout(() => {
-        try {
-            if (!localStorage.getItem('question_bank_tour_seen')) {
-                startTour(false);
-            }
-        } catch (e) { }
-    }, 700);
 };

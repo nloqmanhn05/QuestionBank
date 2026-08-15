@@ -374,16 +374,18 @@
 
     <!-- Onboarding Tour Backdrop & Spotlight -->
     <div id="tour-backdrop"
-        class="fixed inset-0 z-[9997] bg-black/60 backdrop-blur-[4px] transition-opacity duration-300 opacity-0 pointer-events-none">
+        class="fixed inset-0 z-[9997] bg-black/60 backdrop-blur-[4px] transition-opacity duration-300 opacity-0 pointer-events-none"
+        style="display: none;">
     </div>
     <div id="tour-spotlight"
-        class="fixed z-[9998] rounded-2xl pointer-events-none transition-all duration-300 opacity-0 ring-4 ring-[var(--index)] shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]">
+        class="fixed z-[9998] rounded-2xl pointer-events-none transition-all duration-300 opacity-0 ring-4 ring-[var(--index)] shadow-[0_0_0_9999px_rgba(0,0,0,0.55)]"
+        style="display: none;">
     </div>
 
     <!-- Onboarding Tour Popover Card -->
     <div id="tour-popover"
         class="fixed z-[10000] w-[90vw] max-w-[390px] p-4 sm:p-5 rounded-2xl bento shadow-2xl transition-all duration-300 opacity-0 pointer-events-none transform scale-95"
-        style="background: var(--paper-raised); border: 2px solid var(--index);">
+        style="background: var(--paper-raised); border: 2px solid var(--index); display: none;">
         <div class="flex items-center justify-between mb-2">
             <span id="tour-step-badge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider"
                 style="background: var(--index-soft); color: var(--index);">Step 1 of 8</span>
