@@ -1,6 +1,6 @@
 # 🎓 ICT Professional & Ethics Master Question Bank
 
-An interactive, responsive, and modern web application designed for students and professionals to practice and master **ICT Professional Ethics & Computer Studies**. Built with a sleek bento-grid layout, real-time analytics, and detailed slide-referenced explanations for all 210 questions.
+An interactive, responsive, and modern web application designed for students and professionals to practice and master **ICT Professional Ethics & Computer Studies**. Built with a sleek bento-grid layout, real-time analytics, and detailed explanations for all 210 questions.
 
 ---
 
@@ -8,7 +8,7 @@ An interactive, responsive, and modern web application designed for students and
 
 - **🧩 Interactive Onboarding Tour**: Step-by-step guided walkthrough highlighting and explaining every button and UI component on first visit or on demand via the **Tour Guide** button.
 - **📚 210 Curated Practice Questions**: Distributed evenly across 7 core course chapters (30 questions per chapter).
-- **💡 Instant Explanations & Slide References**: Every question provides immediate feedback, complete with detailed rationale and course slide citations (e.g., *Slide 3, Chapter 1*).
+- **💡 Instant Explanations**: Every question provides immediate feedback, complete with detailed rationale.
 - **⚡ Quick Jump Navigation Grid**: Interactive 30-dot matrix pane allows seamless jump to any question with real-time status indicators (🟢 Correct / 🔴 Wrong / ⚪ Unanswered).
 - **📊 Live Performance Analytics**: Tracks overall score, percentage accuracy, and individual chapter completion progress in real time.
 - **🎨 Premium Bento Layout**: Dual-pane responsive architecture featuring high-legibility typography (*Fraunces*, *Instrument Serif*, *Inter*, *JetBrains Mono*) and custom paper-theme styling.

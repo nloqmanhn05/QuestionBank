@@ -2423,7 +2423,6 @@
         const currentChapTitleEl = document.getElementById('current-chap-title');
         const feedbackPanelEl = document.getElementById('feedback-panel');
         const feedbackStatusHeaderEl = document.getElementById('feedback-status-header');
-        const refSlideTextEl = document.getElementById('ref-slide-text');
         const explanationTextEl = document.getElementById('explanation-text');
         const btnPrevQ = document.getElementById('btn-prev-q');
         const btnNextQ = document.getElementById('btn-next-q');
@@ -2571,7 +2570,6 @@
                 feedbackStatusHeaderEl.style.color = "var(--wrong)";
                 feedbackStatusHeaderEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Incorrect Answer`;
 
-                refSlideTextEl.textContent = qData.ref;
                 explanationTextEl.textContent = qData.explanation;
             } else if (savedState !== undefined && savedState.isCorrect) {
                 // If user selected correct, show victory callout
@@ -2583,7 +2581,6 @@
                 feedbackStatusHeaderEl.style.color = "var(--correct)";
                 feedbackStatusHeaderEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Correct Answer`;
 
-                refSlideTextEl.textContent = qData.ref;
                 explanationTextEl.textContent = qData.explanation;
             } else {
                 feedbackPanelEl.classList.add('hidden');
@@ -2789,7 +2786,7 @@
                 target: "#options-container",
                 title: "Multiple-Choice Answer Cards",
                 icon: "fa-solid fa-list-check",
-                desc: "Select an option to test your knowledge! Submitting an answer instantly reveals if it is correct, complete with detailed explanations and course slide references."
+                desc: "Select an option to test your knowledge! Submitting an answer instantly reveals if it is correct, complete with detailed explanations."
             }
         ];
 
