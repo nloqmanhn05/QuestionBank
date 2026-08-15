@@ -101,22 +101,27 @@ body {
     border-color: var(--index);
 }
 
+/* Hide all scrollbars universally while keeping full scroll functionality */
+* {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+*::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+    width: 0 !important;
+    height: 0 !important;
+}
+
+.custom-scrollbar {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #d8d4c4;
-    border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: var(--index);
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 #sidebar {
@@ -450,9 +455,7 @@ body {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
     filter: none !important;
-    box-shadow: 0 0 0 4px var(--index), 0 16px 36px -6px rgba(0, 0, 0, 0.35) !important;
     border-radius: 16px !important;
-    transition: all 0.3s ease !important;
 }
 
 /* ==========================================
