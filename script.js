@@ -2931,34 +2931,77 @@ function positionSpotlightAndPopover(targetEl) {
     if (!targetEl || !tourSpotlightEl || !tourPopoverEl) return;
     const rect = targetEl.getBoundingClientRect();
     const padding = 6;
+    const gap = 14; // gap between spotlight edge and popover
 
-    const top = Math.max(0, rect.top - padding);
-    const left = Math.max(0, rect.left - padding);
-    const width = rect.width + (padding * 2);
-    const height = rect.height + (padding * 2);
+    // Spotlight bounds (padded around target)
+    const spotTop = Math.max(0, rect.top - padding);
+    const spotLeft = Math.max(0, rect.left - padding);
+    const spotWidth = rect.width + (padding * 2);
+    const spotHeight = rect.height + (padding * 2);
+    const spotBottom = spotTop + spotHeight;
+    const spotRight = spotLeft + spotWidth;
 
-    tourSpotlightEl.style.top = `${top}px`;
-    tourSpotlightEl.style.left = `${left}px`;
-    tourSpotlightEl.style.width = `${width}px`;
-    tourSpotlightEl.style.height = `${height}px`;
+    tourSpotlightEl.style.top = `${spotTop}px`;
+    tourSpotlightEl.style.left = `${spotLeft}px`;
+    tourSpotlightEl.style.width = `${spotWidth}px`;
+    tourSpotlightEl.style.height = `${spotHeight}px`;
 
-    // Position Popover nicely relative to target & window viewport
-    const popoverWidth = Math.min(window.innerWidth * 0.9, 390);
-    const popoverHeight = 220; // estimated max height
+    // Measure real popover size
+    tourPopoverEl.style.visibility = 'hidden';
+    tourPopoverEl.style.opacity = '1';
+    tourPopoverEl.style.top = '0px';
+    tourPopoverEl.style.left = '0px';
+    const popRect = tourPopoverEl.getBoundingClientRect();
+    const popW = popRect.width;
+    const popH = popRect.height;
+    tourPopoverEl.style.visibility = '';
 
-    let popTop = top + height + 12;
-    let popLeft = left + (width / 2) - (popoverWidth / 2);
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const margin = 12; // minimum distance from viewport edges
 
-    // If popping below goes offscreen, place above target
-    if (popTop + popoverHeight > window.innerHeight - 20) {
-        popTop = Math.max(12, top - popoverHeight - 12);
+    // Available space in each direction from the spotlight
+    const spaceBelow = vh - spotBottom - gap;
+    const spaceAbove = spotTop - gap;
+    const spaceRight = vw - spotRight - gap;
+    const spaceLeft = spotLeft - gap;
+
+    let popTop, popLeft;
+    let placed = false;
+
+    // 1) Try BELOW the target
+    if (spaceBelow >= popH) {
+        popTop = spotBottom + gap;
+        popLeft = spotLeft + (spotWidth / 2) - (popW / 2);
+        placed = true;
+    }
+    // 2) Try ABOVE the target
+    else if (spaceAbove >= popH) {
+        popTop = spotTop - gap - popH;
+        popLeft = spotLeft + (spotWidth / 2) - (popW / 2);
+        placed = true;
+    }
+    // 3) Try RIGHT of the target
+    else if (spaceRight >= popW) {
+        popTop = spotTop + (spotHeight / 2) - (popH / 2);
+        popLeft = spotRight + gap;
+        placed = true;
+    }
+    // 4) Try LEFT of the target
+    else if (spaceLeft >= popW) {
+        popTop = spotTop + (spotHeight / 2) - (popH / 2);
+        popLeft = spotLeft - gap - popW;
+        placed = true;
+    }
+    // 5) Fallback: place below but with best effort
+    if (!placed) {
+        popTop = spotBottom + gap;
+        popLeft = spotLeft + (spotWidth / 2) - (popW / 2);
     }
 
-    // Keep within horizontal bounds
-    if (popLeft < 12) popLeft = 12;
-    if (popLeft + popoverWidth > window.innerWidth - 12) {
-        popLeft = window.innerWidth - popoverWidth - 12;
-    }
+    // Clamp within viewport bounds
+    popTop = Math.max(margin, Math.min(popTop, vh - popH - margin));
+    popLeft = Math.max(margin, Math.min(popLeft, vw - popW - margin));
 
     tourPopoverEl.style.top = `${popTop}px`;
     tourPopoverEl.style.left = `${popLeft}px`;
