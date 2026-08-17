@@ -1,18 +1,20 @@
-# 🎓 ICT Professional & Ethics Master Question Bank
+# 🎓 ICT Professional & Ethics Master Question Bank (React Edition)
 
-An interactive, responsive, and modern web application designed for students and professionals to practice and master **ICT Professional Ethics & Computer Studies**. Built with a sleek bento-grid layout, real-time analytics, and detailed explanations for all 210 questions.
+An interactive, responsive, and modern web application built with **React** and **Vite** designed for students and professionals to practice and master **ICT Professional Ethics & Computer Studies**. Built with a sleek bento-grid layout, real-time analytics, celebratory feedback, and detailed explanations for all 210 questions.
 
 ---
 
 ## 🌟 Features
 
+- **⚛️ Modern React Architecture**: Modular, component-driven UI with custom React hooks (`useQuestionBank`, `useTour`).
 - **🧩 Interactive Onboarding Tour**: Step-by-step guided walkthrough highlighting and explaining every button and UI component on first visit or on demand via the **Tour Guide** button.
 - **📚 210 Curated Practice Questions**: Distributed evenly across 7 core course chapters (30 questions per chapter).
-- **💡 Instant Explanations**: Every question provides immediate feedback, complete with detailed rationale.
+- **💡 Instant Explanations**: Every question provides immediate feedback, complete with slide references and detailed rationale.
 - **⚡ Quick Jump Navigation Grid**: Interactive 30-dot matrix pane allows seamless jump to any question with real-time status indicators (🟢 Correct / 🔴 Wrong / ⚪ Unanswered).
 - **📊 Live Performance Analytics**: Tracks overall score, percentage accuracy, and individual chapter completion progress in real time.
 - **🎨 Premium Bento Layout**: Dual-pane responsive architecture featuring high-legibility typography (*Fraunces*, *Instrument Serif*, *Inter*, *JetBrains Mono*) and custom paper-theme styling.
 - **🔄 Chapter Reset & Practice**: Easily reset individual chapter progress to retake quizzes and reinforce learning.
+- **🎉 Completion Celebrations**: Particle confetti animation when completing all questions in a chapter.
 
 ---
 
@@ -32,11 +34,12 @@ An interactive, responsive, and modern web application designed for students and
 
 ## 🛠️ Technology Stack
 
-- **Structure**: HTML5 (Semantic elements, accessible components)
-- **Logic**: Vanilla JavaScript (ES6+ state management, dynamic DOM rendering)
-- **Styling**: Tailwind CSS CDN + Custom Vanilla CSS design tokens & animations (`styles.css`)
-- **Icons**: [FontAwesome 6](https://fontawesome.com/)
+- **Framework**: [React 18](https://react.dev/) + [Vite](https://vitejs.dev/)
+- **Styling**: Tailwind CSS + Custom Vanilla CSS design tokens & animations (`src/index.css`)
+- **Icons**: [Lucide React](https://lucide.dev/)
 - **Typography**: [Google Fonts](https://fonts.google.com/) (*Fraunces*, *Instrument Serif*, *Inter*, *JetBrains Mono*)
+- **Animations / Effects**: Canvas Confetti
+- **Backend / Analytics**: Firebase Analytics & Auth Integration
 
 ---
 
@@ -44,36 +47,49 @@ An interactive, responsive, and modern web application designed for students and
 
 ```
 QuestionBank/
-├── index.html        # Primary HTML UI markup & dual-pane layout
-├── script.js        # Question datasets (210 Qs), explanations, state management & logic
-├── styles.css        # CSS variable tokens, custom scrollbars, animations & layout tweaks
-└── README.md         # Project documentation & reference guide
+├── index.html              # Vite entry HTML with custom fonts & metadata
+├── package.json            # Vite, React, Lucide, Tailwind dependencies
+├── vite.config.js          # Vite build and dev server config
+├── tailwind.config.js      # Custom theme color extensions & typography
+├── src/
+│   ├── main.jsx            # React root mount
+│   ├── App.jsx             # Main App layout & layout orchestration
+│   ├── index.css           # Design tokens, fonts, custom paper theme, bento utilities
+│   ├── data/
+│   │   └── questionBank.js # Complete 210 curated questions across 7 chapters
+│   ├── services/
+│   │   └── firebase.js     # Firebase auth & analytics helpers
+│   ├── hooks/
+│   │   ├── useQuestionBank.js # Quiz progress, answers, scoring & localStorage state
+│   │   └── useTour.js         # Tour step management and spotlight positioning
+│   └── components/
+│       ├── Sidebar.jsx        # Navigation, score counters, chapter list, reset button
+│       ├── QuickJumpGrid.jsx  # 30-dot question matrix with live status indicators
+│       ├── QuestionCard.jsx   # Question prompt, multiple-choice options, feedback panel
+│       ├── QuestionHeader.jsx # Chapter badge, title, tour button, Prev/Next navigation
+│       ├── TourModal.jsx      # Spotlight overlay, step popover card, keyboard controls
+│       └── AuthModal.jsx      # Cloud sync / account modal notice
+└── README.md               # Project documentation & reference guide
 ```
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Run Locally
-No build process or node dependencies are required! You can run the app directly in any web browser:
-
-1. Clone or download the repository:
-   ```bash
-   git clone https://github.com/nloqmanhn05/QuestionBank.git
-   ```
-2. Open `index.html` directly in your browser or start a local server using VS Code's **Live Server** extension.
-
-### 2. Pushing to GitHub
-
-If you are setting up or updating the GitHub remote repository for the first time:
-
+### 1. Install Dependencies
 ```bash
-# Add the remote repository URL
-git remote add origin https://github.com/nloqmanhn05/QuestionBank.git
+npm install
+```
 
-# Set default branch to main and push
-git branch -M main
-git push -u origin main
+### 2. Start Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+### 3. Build for Production
+```bash
+npm run build
 ```
 
 ---

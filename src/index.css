@@ -1,0 +1,222 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #f6f4ee;
+  --paper-raised: #ffffff;
+  --card-line: #e4e0d4;
+  --ink: #23281f;
+  --ink-soft: #6b6a5e;
+  --index: #2f6f5e;
+  /* index-tab green */
+  --index-soft: #e8f0ec;
+  --flag: #c65f3d;
+  /* clay/flag accent */
+  --flag-soft: #f6e8e1;
+  --correct: #2a9d6e;
+  --correct-soft: #e6f0ea;
+  --wrong: #c94545;
+  --wrong-soft: #f7e8e2;
+}
+
+* {
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+#question-text,
+#options-container,
+#explanation-text,
+h1, h2, h3, p, span {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+button,
+.chapter-btn,
+#sidebar-toggle {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.font-display {
+  font-family: 'Fraunces', serif !important;
+  font-feature-settings: "ss01";
+}
+
+.font-mono {
+  font-family: 'Instrument Serif', serif !important;
+}
+
+.font-serif-instrument {
+  font-family: 'Instrument Serif', serif !important;
+}
+
+body {
+  background-color: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(35, 40, 31, 0.06) 1px, transparent 0);
+  background-size: 22px 22px;
+}
+
+.bento {
+  background: var(--paper-raised);
+  border: 1px solid var(--card-line);
+  border-radius: 20px;
+}
+
+.option-card {
+  transition: all 0.15s ease;
+  border: 1.5px solid var(--card-line);
+  background: var(--paper-raised);
+}
+
+.option-card:hover:not(.disabled) {
+  border-color: var(--index);
+  background: var(--index-soft);
+  transform: translateX(2px);
+}
+
+.option-card.selected-wrong {
+  border-color: var(--wrong) !important;
+  background: var(--wrong-soft) !important;
+}
+
+.option-card.highlight-correct {
+  border-color: var(--correct) !important;
+  background: var(--correct-soft) !important;
+}
+
+.option-badge {
+  transition: all 0.15s ease;
+}
+
+.option-card:hover:not(.disabled) .option-badge {
+  background-color: var(--index);
+  color: #fff;
+}
+
+/* Custom Scrollbars */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(35, 40, 31, 0.15);
+  border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--index);
+}
+
+/* Onboarding Tour Spotlight & Popover Transitions */
+#tour-backdrop.active {
+  display: block !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#tour-spotlight.active {
+  display: block !important;
+  opacity: 1 !important;
+}
+
+#tour-popover.active {
+  display: block !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transform: scale(1) !important;
+}
+
+.tour-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--card-line);
+  transition: all 0.2s ease;
+}
+
+.tour-dot.active {
+  width: 18px;
+  background: var(--index);
+}
+
+.tour-highlighted-element {
+  position: relative !important;
+  z-index: 9999 !important;
+}
+
+/* Auth Modal active state */
+#auth-modal-backdrop.active {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+#auth-modal-backdrop.active #auth-modal {
+  opacity: 1 !important;
+  transform: scale(1) !important;
+}
+
+/* Sidebar transitions */
+#sidebar {
+  width: 280px;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#sidebar.collapsed {
+  width: 68px;
+}
+
+#sidebar.collapsed .sidebar-label,
+#sidebar.collapsed .full-info,
+#sidebar.collapsed .stats-row,
+#sidebar.collapsed .progress-block,
+#sidebar.collapsed .chapter-intro,
+#sidebar.collapsed .auth-sync-hint,
+#sidebar.collapsed .auth-btn-label {
+  display: none !important;
+}
+
+#sidebar.collapsed .mini-info {
+  display: flex !important;
+}
+
+#sidebar.collapsed .brand-container {
+  padding-left: 0.875rem !important;
+  padding-right: 0.875rem !important;
+  justify-content: center !important;
+}
+
+#sidebar.collapsed .auth-user-block {
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+
+#sidebar.collapsed #chapter-list {
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
