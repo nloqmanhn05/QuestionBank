@@ -61,7 +61,7 @@ export function useQuestionBank(currentUser = null) {
           });
         } else {
           // If no cloud progress exists yet, sync current local progress up to Firestore
-          firestoreApi.saveUserProgress(currentUser.uid, userState);
+          firestoreApi.saveUserProgress(currentUser, userState, QUESTION_BANK);
         }
       } catch (err) {
         console.warn('Error loading cloud progress:', err);
@@ -96,7 +96,7 @@ export function useQuestionBank(currentUser = null) {
     }
 
     if (currentUser && isInitialSyncDone.current) {
-      firestoreApi.saveUserProgress(currentUser.uid, userState);
+      firestoreApi.saveUserProgress(currentUser, userState, QUESTION_BANK);
     }
   }, [userState, currentUser]);
 
@@ -250,7 +250,7 @@ export function useQuestionBank(currentUser = null) {
             [key]: {},
           };
           if (currentUser) {
-            firestoreApi.saveUserProgress(currentUser.uid, next);
+            firestoreApi.saveUserProgress(currentUser, next, QUESTION_BANK);
           }
           return next;
         });

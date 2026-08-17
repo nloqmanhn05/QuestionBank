@@ -130,37 +130,113 @@ export const authApi = {
 };
 
 export const firestoreApi = {
-  saveUserProgress: async (uid, userState) => {
-    if (!db || !uid) return;
+  saveUserProgress: async (user, userState, chaptersData) => {
+    if (!db || !user?.uid) return;
     try {
-      const progressRef = doc(db, "users", uid, "data", "progress");
-      await setDoc(progressRef, {
-        progress: userState,
-        updatedAt: serverTimestamp(),
-      }, { merge: true });
+      const email = user.email || "";
+      const name = user.displayName || email.split("@")[0] || "Student";
+      
+      // Calculate overall and chapter-by-chapter statistics
+      let totalAnswered = 0;
+      let totalCorrect = 0;
+      const totalQuestions = 210;
+      const chaptersBreakdown = {};
+
+      const chapterKeys = ['ch1', 'ch2', 'ch3', 'ch4', 'ch5', 'ch6', 'ch7'];
+      chapterKeys.forEach((key) => {
+        const chapState = userState[key] || {};
+        const answeredCount = Object.keys(chapState).length;
+        let correctCount = 0;
+
+        Object.values(chapState).forEach((ans) => {
+          if (ans?.isCorrect) correctCount++;
+        });
+
+        totalAnswered += answeredCount;
+        totalCorrect += correctCount;
+
+        const chapInfo = chaptersData?.[key];
+        chaptersBreakdown[key] = {
+          chapterKey: key,
+          title: chapInfo?.title || `Chapter ${key.replace('ch', '')}`,
+          answeredCount,
+          correctCount,
+          totalQuestions: 30,
+          accuracyPercent: answeredCount > 0 ? Math.round((correctCount / answeredCount) * 100) : 0,
+          isComplete: answeredCount === 30,
+          answers: chapState,
+        };
+      });
+
+      const overallAccuracy = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+
+      const userRecord = {
+        uid: user.uid,
+        email: email,
+        name: name,
+        displayName: name,
+        lastActive: serverTimestamp(),
+        overallScore: totalCorrect,
+        totalAnswered: totalAnswered,
+        totalQuestions: totalQuestions,
+        overallAccuracy: overallAccuracy,
+        chapters: chaptersBreakdown,
+        rawProgress: userState,
+      };
+
+      // 1. Save to primary users collection by UID
+      const userRef = doc(db, "users", user.uid);
+      await setDoc(userRef, userRecord, { merge: true });
+
+      // 2. Also save to user_progress collection with email for easy identification in Firebase Console
+      if (email) {
+        const sanitizedEmail = email.toLowerCase().replace(/[^a-z0-9_@.-]/g, "_");
+        const emailRef = doc(db, "user_progress_by_email", sanitizedEmail);
+        await setDoc(emailRef, userRecord, { merge: true });
+      }
     } catch (err) {
       console.warn("Firestore save progress error:", err);
     }
   },
+
   getUserProgress: async (uid) => {
     if (!db || !uid) return null;
     try {
-      const progressRef = doc(db, "users", uid, "data", "progress");
-      const docSnap = await getDoc(progressRef);
+      const userRef = doc(db, "users", uid);
+      const docSnap = await getDoc(userRef);
       if (docSnap.exists()) {
-        return docSnap.data().progress || null;
+        const data = docSnap.data();
+        if (data.rawProgress) return data.rawProgress;
+        if (data.chapters) {
+          // Reconstruct rawProgress from chapters breakdown if rawProgress not present
+          const reconstructed = {};
+          Object.keys(data.chapters).forEach((k) => {
+            reconstructed[k] = data.chapters[k].answers || {};
+          });
+          return reconstructed;
+        }
       }
     } catch (err) {
       console.warn("Firestore get progress error:", err);
     }
     return null;
   },
+
   listenToUserProgress: (uid, callback) => {
     if (!db || !uid) return () => {};
-    const progressRef = doc(db, "users", uid, "data", "progress");
-    return onSnapshot(progressRef, (docSnap) => {
+    const userRef = doc(db, "users", uid);
+    return onSnapshot(userRef, (docSnap) => {
       if (docSnap.exists()) {
-        callback(docSnap.data().progress || null);
+        const data = docSnap.data();
+        if (data.rawProgress) {
+          callback(data.rawProgress);
+        } else if (data.chapters) {
+          const reconstructed = {};
+          Object.keys(data.chapters).forEach((k) => {
+            reconstructed[k] = data.chapters[k].answers || {};
+          });
+          callback(reconstructed);
+        }
       }
     }, (err) => {
       console.warn("Firestore progress listener error:", err);
